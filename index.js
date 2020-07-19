@@ -16,11 +16,23 @@ const handleProxyRes = (proxyRes, req, res) => {
     delete proxyRes.headers['x-served-by']
     delete proxyRes.headers['x-github-request-id']
     delete proxyRes.headers['content-security-policy']
+    // console.log(proxyRes.headers)
 }
-app.use('*', createProxyMiddleware({
+
+app.use('/:username/*', createProxyMiddleware({
     target: 'https://raw.githubusercontent.com/',
     changeOrigin: true,
     onProxyRes: handleProxyRes
 }))
+
+
+app.use((req, res) => {
+    res.header('Content-Type', 'Application/json')
+    res.send({
+        'status': 404,
+        'message': 'Not found'
+    })
+    res.end()
+})
 
 app.listen(2000)
